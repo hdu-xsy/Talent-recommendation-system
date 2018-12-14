@@ -5,12 +5,12 @@
          version="4.0">
 
     <welcome-file-list>
-        <welcome-file>/Login/login.jsp</welcome-file>
+        <welcome-file>/Login/login.html</welcome-file>
     </welcome-file-list>
 
     <servlet>
         <servlet-name>exec_register</servlet-name>
-        <servlet-class>servlet.exec_register</servlet-class>
+        <servlet-class>servlet.Packer4WF.Register</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>exec_register</servlet-name>
@@ -19,7 +19,7 @@
 
     <servlet>
         <servlet-name>refuse_offer</servlet-name>
-        <servlet-class>servlet.refuse_offer</servlet-class>
+        <servlet-class>servlet.Packer4WF.OfferRefuse</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>refuse_offer</servlet-name>
@@ -35,6 +35,54 @@
         <url-pattern>/util_server</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>login_servlet</servlet-name>
+        <servlet-class>servlet.login_servlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>login_servlet</servlet-name>
+        <url-pattern>/login_servlet</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>publish_requirement</servlet-name>
+        <servlet-class>servlet.publish_requirement</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>publish_requirement</servlet-name>
+        <url-pattern>/publish_requirement</url-pattern>
+    </servlet-mapping>
+    
+    <!--****************************** Filters ************************-->
+    
+    <filter>
+        <filter-name>StuffAuthFilter</filter-name>
+        <filter-class>filter.StuffAuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>StuffAuthFilter</filter-name>
+        <url-pattern>/inexist/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>HRAuthFilter</filter-name>
+        <filter-class>filter.HRAuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HRAuthFilter</filter-name>
+        <url-pattern>/Query_Recruit_HR.jsp</url-pattern>
+        <url-pattern>/SRMPages/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>AdminAuthFilter</filter-name>
+        <filter-class>filter.AdminAuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AdminAuthFilter</filter-name>
+        <url-pattern>/inexist/*</url-pattern>
+    </filter-mapping>
+    
     <filter>
         <filter-name>ConfirmOfferFilter</filter-name>
         <filter-class>filter.ConfirmOfferFilter</filter-class>
@@ -46,11 +94,36 @@
 
     <filter>
         <filter-name>SingleRecManagementFilter</filter-name>
-        <filter-class>filter.SingleRecManagementFilter</filter-class>
+        <filter-class>filter.SRMFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>SingleRecManagementFilter</filter-name>
-        <url-pattern>/Single_Rec_Management/unexist.jsp</url-pattern>
+        <url-pattern>/SRMPages/*</url-pattern>
     </filter-mapping>
+
+    <!-- SpringConfig -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <servlet>
+        <servlet-name>springmvc</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:springmvc-servlet.xml</param-value>
+        </init-param>
+        <!-- <load-on-startup>1</load-on-startup> -->
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>springmvc</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
 
 </web-app>
