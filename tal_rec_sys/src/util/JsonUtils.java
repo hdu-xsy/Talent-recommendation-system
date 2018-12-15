@@ -1,52 +1,25 @@
 package util;
 
-import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import com.sun.rowset.CachedRowSetImpl;
-
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
 public class JsonUtils {
 
-    //**************************Obj2Str Method************************
-    public static String toJSONString(JSONObject jsonObject)
+    /***
+     * 将List对象序列化为JSON文本
+     */
+    public static <T> String toJSONString(List<T> list)
     {
-        return jsonObject.toString();
-    }
-
-    public static String toJSONString(JSONArray jsonArray)
-    {
-        return jsonArray.toString();
-    }
-
-    public static String toJSONString(Object object) {
-        JSONObject jsonArray = JSONObject.fromObject(object);
-        return jsonArray.toString();
-    }
-
-    public static <T> String toJSONString(ArrayList<T> list) {
         JSONArray jsonArray = JSONArray.fromObject(list);
+
         return jsonArray.toString();
     }
-    //**************************toString Method************************
 
-    //**************************Str2Obj Method************************
-    public static <T> T Str2Obj(String json_str,Class<T> obj_class){
-        JSONObject json =JSONObject.fromObject(json_str);
-        return (T)JSONObject.toBean(json,obj_class);
-    }
-
-    public static <T> T[] Str2Array(String json_str,Class<T> obj_class){
-        JSONArray json_array=JSONArray.fromObject(json_str);
-        return (T[])JSONArray.toArray(json_array,obj_class);
-    }
-
-    //**************************toObj Method************************
-
-    public static List<Map> toMap(CachedRowSetImpl rs, String... strings) throws SQLException {
+    public static List<Map> toMap(ResultSet rs, String... strings) throws SQLException {
         Map<String,String> map = null;
         List<Map> list = new ArrayList<>();
         while(rs.next()) {
@@ -57,6 +30,38 @@ public class JsonUtils {
             list.add(map);
         }
         return list;
+    }
+
+    /***
+     * 将对象序列化为JSON文本
+     * @param object
+     * @return
+     */
+    public static String toJSONString(Object object)
+    {
+        JSONArray jsonArray = JSONArray.fromObject(object);
+
+        return jsonArray.toString();
+    }
+
+    /***
+     * 将JSON对象数组序列化为JSON文本
+     * @param jsonArray
+     * @return
+     */
+    public static String toJSONString(JSONArray jsonArray)
+    {
+        return jsonArray.toString();
+    }
+
+    /***
+     * 将JSON对象序列化为JSON文本
+     * @param jsonObject
+     * @return
+     */
+    public static String toJSONString(JSONObject jsonObject)
+    {
+        return jsonObject.toString();
     }
 
     /***

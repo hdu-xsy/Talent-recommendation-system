@@ -4,7 +4,7 @@ import bean.ConfirmUser;
 import util.CommonConnection;
 import ienum.ConnectUser;
 import util.MD5;
-import ienum.RecStage;
+import ienum.RStage;
 import ienum.eErrorPage;
 
 import javax.servlet.*;
@@ -30,7 +30,8 @@ public class ConfirmOfferFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) resp;
         String id=request.getParameter("u");
         String info_md5=request.getParameter("v");
-        String []res=CommonConnection.singleLineQuery("select rp_name,rp_sex,rp_tel_num,rp_vali from recommend_people where rp_id="+id,2,ConnectUser.SYS);
+        CommonConnection.setConnectUser(ConnectUser.SYS);
+        String []res=CommonConnection.singleLineQuery("select rp_name,rp_sex,rp_tel_num,rp_vali from recommend_people where rp_id="+id,2);
         //验证是否存在此人
         if(res==null){
             response.sendRedirect(eErrorPage.NOCORRESPONDINGRECORD.toString());
@@ -49,7 +50,7 @@ public class ConfirmOfferFilter implements Filter {
             return;
         }
         // 验证是否有其对应推荐是否是等待入职状态(可能由于时间过期等原因，将推荐关闭)
-        boolean exist=CommonConnection.existQuery("select rec_id where rec_rp_id='"+id+"' and rec_recsta_id="+ RecStage.W_OC.toId(),ConnectUser.SYS);
+        boolean exist=CommonConnection.existQuery("select rec_id where rec_rp_id='"+id+"' and rec_recsta_id="+ RStage.WAITOFFERCONFIRM.toInt());
         if(!exist){
             response.sendRedirect(eErrorPage.PERMISSIONDENY.toString());
             return;

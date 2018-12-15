@@ -1,20 +1,19 @@
 package bean;
 
-import ienum.JobType;
-
 public class LoginUser {
     String username;
     String pwd;
     String id;
-    JobType job_type;
+    String job_type;
 
     public LoginUser(String username, String pwd) {
         this.username = username;
         this.pwd=pwd;
     }
 
-    public LoginUser(String id, String username, JobType job_type){
+    public LoginUser(String username, String pwd, String id, String job_type){
         this.username=username;
+        this.pwd=pwd;
         this.id=id;
         this.job_type=job_type;
     }
@@ -27,5 +26,5 @@ public class LoginUser {
 
     public String getId() { return id; }
 
-    public JobType getJob_type() { return job_type; }
+    public String getJob_type() { return job_type; }
 }

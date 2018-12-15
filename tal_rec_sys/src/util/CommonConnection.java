@@ -1,10 +1,6 @@
 package util;
 
 import java.sql.*;
-import java.util.ArrayList;
-
-import Interface.Rs2List;
-import com.sun.rowset.CachedRowSetImpl;
 import ienum.ConnectUser;
 
 /*
@@ -20,7 +16,7 @@ public class CommonConnection {
     private static Statement sql=null;
     private static ConnectUser curUser=null;
 
-    private static void setConnectUser(ConnectUser user){
+    public static void setConnectUser(ConnectUser user){
         if(!loadDriver){
             try{
                 Class.forName(Config.getClassForName());
@@ -39,23 +35,27 @@ public class CommonConnection {
         }
     }
 
-    //********************************************************************** Query Methods*************************************************************
-
     //caller should rember to close the returned ReslutSet!
-    public static CachedRowSetImpl makeQuery(String query,ConnectUser connect_user){
-        setConnectUser(connect_user);
+    public static ResultSet makeQuery(String query){
+        if(!checkConnecting())return null;
         ResultSet rs=null;
-        CachedRowSetImpl cached_rs=null;
         try{
-            cached_rs=new CachedRowSetImpl();
             rs=sql.executeQuery(query);
-            cached_rs.populate(rs);
-            rs.close();
         }catch(Exception e){
-            System.out.println("the query caused error:"+query+"......");
             e.printStackTrace();
         }
-        return cached_rs;
+        return rs;
+    }
+
+    public static int Update(String query) {
+        if(!checkConnecting()) return 0;
+        int rs = 0;
+        try {
+            rs=sql.executeUpdate(query);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rs;
     }
 
     public static ResultSet limitQuery(String query,int limit,int page){
@@ -63,8 +63,8 @@ public class CommonConnection {
         return null;
     }
 
-    public static String singleResultQuery(String query,ConnectUser connect_user){
-        setConnectUser(connect_user);
+    public static String singleResultQuery(String query){
+        if(!checkConnecting())return null;
         ResultSet rs=null;
         String result=null;
         try{
@@ -73,14 +73,13 @@ public class CommonConnection {
             result=rs.getString(1).trim();
             rs.close();
         }catch(Exception e){
-            System.out.println("the query caused error:"+query+"......");
             e.printStackTrace();
         }
         return result;
     }
 
-    public static String[] singleLineQuery(String query, int ncol,ConnectUser connect_user){
-        setConnectUser(connect_user);
+    public static String[] singleLineQuery(String query, int ncol){
+        if(!checkConnecting())return null;
         ResultSet rs=null;
         String []result=null;
         try{
@@ -90,71 +89,33 @@ public class CommonConnection {
             for(int i=0;i<ncol;++i)result[i]=rs.getString(i+1).trim();
             rs.close();
         }catch(Exception e){
-            System.out.println("the query caused error:"+query+"......");
             e.printStackTrace();
         }
         return result;
     }
 
-    public static boolean existQuery(String query,ConnectUser connect_user){
-        setConnectUser(connect_user);
+    public static boolean existQuery(String query){
         boolean have_rs=false;
+        if(!checkConnecting())return have_rs;
+        ResultSet rs=null;
         try{
-            ResultSet rs=sql.executeQuery(query);
+            rs=sql.executeQuery(query);
             have_rs=rs.next();
             rs.close();
         }catch(Exception e){
-            System.out.println("the query caused error:"+query+"......");
             e.printStackTrace();
         }
         return have_rs;
     }
 
-    public static <E extends Rs2List> ArrayList<E> listQuery (String query,E e,ConnectUser connect_user){
-        setConnectUser(connect_user);
-        ArrayList<E>list=null;
-        list=new ArrayList<E>();
-        try {
-            CachedRowSetImpl cached_rs=new CachedRowSetImpl();
-            ResultSet rs=sql.executeQuery(query);
-            cached_rs.populate(rs);
-            rs.close();
-            while(cached_rs.next()){
-                list.add((E)e.fromRs(cached_rs));
-            }
-            rs.close();
-        } catch (SQLException e1) {
-            System.out.println("the query caused error:"+query+"......");
-            e1.printStackTrace();
-        }
-        return list;
-    }
-
-    //********************************************************************** Update Methods*************************************************************
-
-    public static int Update(String query,ConnectUser connect_user) {
-        setConnectUser(connect_user);
-        int rs = 0;
-        try {
-            rs=sql.executeUpdate(query);
-        }catch (Exception e) {
-            System.out.println("the query caused error:"+query+"......");
-            e.printStackTrace();
-        }
-        return rs;
-    }
-
     public static boolean checkConnecting(){
-        if(!connecting)return false;
-        else return true;
+        if(!connecting){
+            System.out.println("Error:connection havn't established yet!");
+            return false;
+        }else return true;
     }
 
-    public static void closeConnection(ConnectUser connect_user){
-        if(connect_user!=ConnectUser.ADMIN&&connect_user!=ConnectUser.DEV){
-            System.out.println("Error:closeConnection is a critical operation.\n"+
-                    "It requires you have right of Admin or Develop.\n"+
-                    "If you don't know what the operation may cause,don't do it.\n");
-        }
+    public static void closeConnection(){
         try {
             sql.close();
             conn.close();

@@ -27,11 +27,12 @@
         return;
     }
     String rpid=request.getParameter("rpid");
-    ResultSet rs= CommonConnection.makeQuery("select * from recommend_person_details where rp_id="+rpid,ConnectUser.HR);
+    CommonConnection.setConnectUser(ConnectUser.HR);
+    ResultSet rs= CommonConnection.makeQuery("select * from recommend_person_details where rp_id="+rpid);
     TableBase table=null;
     try{
         rs.next();
-        String rec_id=rs.getString("rp_id");
+        String id=rs.getString("rp_id");
         String name=rs.getString("rp_name");
         String age=rs.getString("rp_age");
         String sex=rs.getString("rp_sex");
@@ -46,8 +47,8 @@
         String abi=rs.getString("rp_abi");
         String cv_path=rs.getString("rp_res_path");
         rs.close();
-        String []head={"rec_id","名字","年龄","性别","电话","email","职位","学位","毕业学校","是否在读","毕业时间","主修专业","专业技能"};
-        String []content={rec_id,name,age,sex,tel_num,email,job,deg,uni,stu,grt,maj,abi};
+        String []head={"id","名字","年龄","性别","电话","email","职位","学位","毕业学校","是否在读","毕业时间","主修专业","专业技能"};
+        String []content={id,name,age,sex,tel_num,email,job,deg,uni,stu,grt,maj,abi};
         String [][]table_content={head,content};
         table_content= iutil.transpose(table_content);
         table=new TableBase(table_content);
