@@ -1,8 +1,7 @@
 <%@ page import="util.CommonConnection" %>
 <%@ page import="ienum.ConnectUser" %>
-<%@ page import="java.sql.ResultSet" %>
 <%@ page import="bean.LoginUser" %>
-<%@ page import="ienum.eErrorPage" %><%--
+<%@ page import="table.TableBase" %><%--
   Created by IntelliJ IDEA.
   User: sdtsz
   Date: 2018/10/28
@@ -13,21 +12,23 @@
 <html>
 <head>
     <title>积分查询</title>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
     <%
         LoginUser user=(LoginUser)session.getAttribute("user");
-        if(user==null){
-            response.sendRedirect(eErrorPage.PERMISSIONDENY.toString());
-            return;
-        }
-        String id =user.getId()+"";
-        CommonConnection.setConnectUser(ConnectUser.DEV);
-        String []rs=CommonConnection.singleLineQuery("select stf_name,stf_pts from stuff where stf_id="+ id,2);
-        String name=rs[0];
-        int points=Integer.parseInt(rs[1]);
+        String user_id =user.getId()+"";
+        String [] values =CommonConnection.singleLineQuery("select stf_name,stf_pts from stuff where stf_id="+ user_id,2,ConnectUser.STUFF);
+        String name= values[0];
+        int points=Integer.parseInt(values[1]);
     %>
     员工名称：<%=name%><br/>
-    累计积分：<%=""+points%>
+    累计积分：<%=""+points%><br/>
+<%
+    TableBase table=new TableBase("select pch_change,pch_desc,pch_time from points_change_details where pch_stf_id="+user_id,ConnectUser.SYS);
+    String head[]={"积分变化","变化原因","变化时间"};
+    out.print(table.genHTML(head));
+%>
+
 </body>
 </html>
